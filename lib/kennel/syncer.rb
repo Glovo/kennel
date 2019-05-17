@@ -79,7 +79,7 @@ module Kennel
               fill_details(a, cache) if e.class::API_LIST_INCOMPLETE
               diff = e.diff(a)
               @update << [id, e, a, diff] if diff.any?
-            elsif tracking_id(a) # was previously managed
+            elsif tracking_id(a) && !@lookup_map[tracking_id(a)] # was previously managed (need to check lookup map in case of dashboards)
               @delete << [id, nil, a]
             end
           end
@@ -94,7 +94,7 @@ module Kennel
     def fill_details(a, cache)
       resource = a.fetch(:api_resource)
       args = [resource, a.fetch(:id)]
-      full = cache.fetch(args, a.fetch(:modified)) do
+      full = cache.fetch(args, a[:modified] || a[:modified_at]) do
         unnest(resource, @api.show(*args))
       end
       a.merge!(full)
@@ -121,7 +121,7 @@ module Kennel
         results = @api.list(api_resource, with_downtimes: false)
         if results.is_a?(Hash)
           results = results[results.keys.first]
-          results.each { |r| r[:id] = Integer(r.fetch(:id)) }
+          results.each { |r| r[:id] = r.fetch(:id) }
         end
         results.each { |c| c[:api_resource] = api_resource }
       end.flatten(1)
@@ -146,6 +146,7 @@ module Kennel
       end
 
       e = @lookup_map["#{a.fetch(:api_resource)}:#{a.fetch(:id)}"] || @lookup_map[tracking_id(a)]
+      return if e && a[:api_resource] != e.class.api_resource
       @expected.delete(e) if e
     end
 

@@ -46,6 +46,10 @@ module Kennel
       syncer.plan
     end
 
+    def list
+        print importer.import_all
+    end
+
     def update
       syncer.plan
       syncer.update if syncer.confirm
@@ -59,6 +63,10 @@ module Kennel
 
     def api
       @api ||= Api.new(ENV.fetch("DATADOG_APP_KEY"), ENV.fetch("DATADOG_API_KEY"))
+    end
+
+    def importer
+      @importer ||= Importer.new(api)
     end
 
     def generated

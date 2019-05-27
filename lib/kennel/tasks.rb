@@ -23,6 +23,11 @@ namespace :kennel do
     Kennel.plan
   end
 
+  desc "List task"
+  task list: :environment do
+    Kennel.list
+  end
+
   desc "update datadog (scope with PROJECT=name)"
   task update_datadog: :environment do
     Kennel.update

@@ -157,23 +157,31 @@ module Kennel
       end
     end
 
+    def arrow
+      Utils.color(:magenta, "->")
+    end
+
     def print_diff(diff)
       diff.each do |type, field, old, new|
         if type == "+"
           temp = new.inspect
           new = old.inspect
           old = temp
+          type = Utils.color(:green,"#{type}")
+          field = Utils.color(:green,"#{field}")
         else # ~ and -
           old = old.inspect
           new = new.inspect
+          type = Utils.color(:cyan,"#{type}")
+          field = Utils.color(:cyan,"#{field}")
         end
 
         if (old + new).size > 100
           Kennel.out.puts "  #{type}#{field}"
-          Kennel.out.puts "    #{old} ->"
+          Kennel.out.puts "    #{old} #{arrow}"
           Kennel.out.puts "    #{new}"
         else
-          Kennel.out.puts "  #{type}#{field} #{old} -> #{new}"
+          Kennel.out.puts "  #{type}#{field} #{old} #{arrow} #{new}"
         end
       end
     end

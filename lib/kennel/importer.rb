@@ -62,7 +62,7 @@ module Kennel
       id = data.fetch(:id) # store numerical id returned from the api
       model.normalize({}, data)
       data[:id] = id
-      data[:kennel_id] = Kennel::Utils.parameterize(data.fetch(TITLES.detect { |t| data[t] }, "Not found"))
+      data[:kennel_id] = Kennel::Utils.parameterize(data.fetch(TITLES.detect { |t| data[t] }))
 
       if resource == "monitor"
         # flatten monitor options so they are all on the base
@@ -103,8 +103,10 @@ module Kennel
             "\n#{pretty}\n  "
           elsif k == :message
             "\n    <<~TEXT\n#{v.each_line.map { |l| l.strip.empty? ? "\n" : "      #{l}" }.join}\n    TEXT\n  "
+=begin
           elsif v.is_a?(Numeric)
             " #{v.to_i == v ? v.to_i : v} "
+=end
           else
             " #{v.inspect} "
           end
